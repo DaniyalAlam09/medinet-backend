@@ -172,8 +172,8 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 });
 
-// Index for better query performance
-userSchema.index({ email: 1 });
+// Indexes
+// Note: `unique: true` on the email field already creates an index for email
 userSchema.index({ role: 1 });
 userSchema.index({ hospitalId: 1 });
 

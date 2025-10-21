@@ -16,6 +16,7 @@ const {
 
 const { protect, authorize } = require('../middleware/auth');
 const { upload } = require('../middleware/upload');
+const { uploadToCloudinary } = require('../config/cloudinary');
 const {
     validateRegister,
     validateLogin,
@@ -381,12 +382,17 @@ router.get('/me', protect, getMe);
  *       400:
  *         description: Invalid file
  */
-router.post('/profile/image', protect, upload.single('image'), (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ success: false, message: 'Image file is required' });
+router.post('/profile/image', protect, upload.single('image'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'Image file is required' });
+        }
+
+        const result = await uploadToCloudinary(req.file, 'medinet/profiles');
+        return res.json({ success: true, url: result.secure_url, public_id: result.public_id });
+    } catch (err) {
+        return res.status(500).json({ success: false, message: 'Upload failed' });
     }
-    const url = `${req.protocol}://${req.get('host')}/uploads/profiles/${req.file.filename}`;
-    return res.json({ success: true, url });
 });
 
 router.put('/profile', protect, validateUpdateProfile, updateProfile);
