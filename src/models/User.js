@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['super_admin', 'hospital_admin', 'doctor', 'patient'],
+        enum: ['super_admin', 'hospital', 'doctor', 'patient'],
         required: [true, 'Role is required']
     },
     phone: {
@@ -115,19 +115,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: function () {
             return this.role === 'doctor';
-        }
-    },
-    // Hospital admin fields
-    department: {
-        type: String,
-        required: function () {
-            return this.role === 'hospital_admin';
-        }
-    },
-    position: {
-        type: String,
-        required: function () {
-            return this.role === 'hospital_admin';
         }
     },
     // Patient fields

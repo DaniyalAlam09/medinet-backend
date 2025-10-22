@@ -24,6 +24,19 @@ const createHospital = async (req, res) => {
 
         await hospital.save();
 
+        // Create hospital user
+        const hospitalUser = new User({
+            firstName: hospitalData.firstName || 'Hospital',
+            lastName: hospitalData.lastName || 'Manager',
+            email: hospitalData.email,
+            password: hospitalData.password || 'TempPassword123',
+            phone: hospitalData.phone,
+            role: 'hospital',
+            approvalStatus: 'pending'
+        });
+
+        await hospitalUser.save();
+
         res.status(201).json({
             success: true,
             message: 'Hospital registered successfully. Awaiting approval.',

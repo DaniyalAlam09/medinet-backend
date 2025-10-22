@@ -48,7 +48,6 @@ const getPendingHospitals = async (req, res) => {
         const { page = 1, limit = 10 } = req.query;
 
         const hospitals = await Hospital.find({ status: 'pending' })
-            .populate('adminId', 'firstName lastName email')
             .sort({ createdAt: -1 })
             .limit(limit * 1)
             .skip((page - 1) * limit);
@@ -142,6 +141,18 @@ const approveUser = async (req, res) => {
         }
 
         await user.approve(approverId);
+
+        // If this is a hospital user, also approve the corresponding hospital
+        if (user.role === 'hospital') {
+            const hospital = await Hospital.findOne({ email: user.email });
+            if (hospital && hospital.status === 'pending') {
+                hospital.status = 'approved';
+                hospital.approvedBy = approverId;
+                hospital.approvedAt = new Date();
+                await hospital.save();
+                console.log(`✅ Hospital "${hospital.name}" approved along with user`);
+            }
+        }
 
         // Send approval email
         try {
@@ -248,32 +259,36 @@ const approveHospital = async (req, res) => {
             });
         }
 
-        await hospital.approve(approverId);
-
-        // Also approve the hospital admin
-        const hospitalAdmin = await User.findOne({
-            hospitalId: hospitalId,
-            role: 'hospital_admin'
+        // Find and approve the hospital user
+        const hospitalUser = await User.findOne({
+            email: hospital.email,
+            role: 'hospital',
+            approvalStatus: 'pending'
         });
 
-        if (hospitalAdmin) {
-            hospitalAdmin.approvalStatus = 'approved';
-            hospitalAdmin.approvedBy = approverId;
-            hospitalAdmin.approvedAt = new Date();
-            await hospitalAdmin.save();
+        if (hospitalUser) {
+            hospitalUser.approvalStatus = 'approved';
+            hospitalUser.approvedBy = approverId;
+            hospitalUser.approvedAt = new Date();
+            await hospitalUser.save();
         }
 
-        // Send approval email to hospital admin
-        if (hospitalAdmin) {
-            try {
-                await sendEmail({
-                    email: hospitalAdmin.email,
-                    subject: 'Hospital Approved - MediNet',
-                    html: emailTemplates.hospitalApproved(hospital.name, message)
-                });
-            } catch (emailError) {
-                console.error('Email sending failed:', emailError);
-            }
+        // Approve the hospital
+        await hospital.approve(approverId);
+
+        // Send approval email to hospital
+        try {
+            await sendEmail({
+                to: hospital.email,
+                subject: 'Hospital Registration Approved',
+                html: emailTemplates.hospitalApproved({
+                    hospitalName: hospital.name,
+                    message: message || 'Your hospital has been approved and is now active in the MediNet system.'
+                })
+            });
+        } catch (emailError) {
+            console.error('Email sending failed:', emailError);
+            // Don't fail the request if email fails
         }
 
         res.json({

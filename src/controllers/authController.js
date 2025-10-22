@@ -150,7 +150,7 @@ const register = async (req, res) => {
             userData.qualification = qualification;
         }
 
-        if (role === 'hospital_admin') {
+        if (role === 'hospital') {
             if (!department || !position) {
                 return res.status(400).json({
                     success: false,
@@ -186,7 +186,7 @@ const register = async (req, res) => {
         }
 
         // Set approval status based on role
-        if (userData.role === 'hospital_admin') {
+        if (userData.role === 'hospital') {
             userData.approvalStatus = 'pending'; // Will be approved when hospital is approved
         } else if (userData.role === 'doctor') {
             userData.approvalStatus = 'pending'; // Needs hospital admin approval

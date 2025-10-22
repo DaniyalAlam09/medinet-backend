@@ -116,13 +116,6 @@ const hospitalSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-    adminId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: function () {
-            return this.status === 'approved';
-        }
-    },
     approvedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
@@ -197,7 +190,7 @@ hospitalSchema.methods.reject = function (rejectionReason, rejectedBy) {
 
 // Static method to get hospitals by status
 hospitalSchema.statics.getByStatus = function (status) {
-    return this.find({ status }).populate('adminId', 'firstName lastName email');
+    return this.find({ status });
 };
 
 // Static method to get approved hospitals

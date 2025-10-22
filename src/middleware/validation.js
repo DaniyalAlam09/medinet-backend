@@ -53,7 +53,7 @@ const validateRegister = [
         }),
 
     body('role')
-        .isIn(['super_admin', 'hospital_admin', 'doctor', 'patient'])
+        .isIn(['super_admin', 'hospital', 'doctor', 'patient'])
         .withMessage('Invalid role selected'),
 
     body('phone')
@@ -104,20 +104,6 @@ const validateRegister = [
         .isLength({ min: 2, max: 100 })
         .withMessage('Qualification must be between 2 and 100 characters'),
 
-    // Hospital admin validations
-    body('department')
-        .if(body('role').equals('hospital_admin'))
-        .notEmpty()
-        .withMessage('Department is required for hospital admins')
-        .isLength({ min: 2, max: 100 })
-        .withMessage('Department must be between 2 and 100 characters'),
-
-    body('position')
-        .if(body('role').equals('hospital_admin'))
-        .notEmpty()
-        .withMessage('Position is required for hospital admins')
-        .isLength({ min: 2, max: 100 })
-        .withMessage('Position must be between 2 and 100 characters'),
 
     // Patient validations
     body('emergencyContact')

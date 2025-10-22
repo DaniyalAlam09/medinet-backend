@@ -36,7 +36,7 @@ const { body } = require('express-validator');
  *         name: role
  *         schema:
  *           type: string
- *           enum: [doctor, hospital_admin, patient]
+ *           enum: [doctor, hospital, patient]
  *         description: Filter by user role
  *       - in: query
  *         name: page
@@ -192,7 +192,7 @@ router.get('/pending-hospitals', protect, authorize('super_admin'), getPendingHo
  *       403:
  *         description: Forbidden - Hospital Admin only
  */
-router.get('/pending-doctors', protect, authorize('hospital_admin'), getPendingDoctors);
+router.get('/pending-doctors', protect, authorize('hospital'), getPendingDoctors);
 
 /**
  * @swagger
@@ -245,7 +245,7 @@ router.get('/pending-doctors', protect, authorize('hospital_admin'), getPendingD
  *       404:
  *         description: User not found
  */
-router.post('/approve-user/:userId', protect, authorize('super_admin', 'hospital_admin'), [
+router.post('/approve-user/:userId', protect, authorize('super_admin', 'hospital'), [
     body('message').optional().isString().trim().isLength({ max: 500 })
 ], approveUser);
 
@@ -302,7 +302,7 @@ router.post('/approve-user/:userId', protect, authorize('super_admin', 'hospital
  *       404:
  *         description: User not found
  */
-router.post('/reject-user/:userId', protect, authorize('super_admin', 'hospital_admin'), [
+router.post('/reject-user/:userId', protect, authorize('super_admin', 'hospital'), [
     body('reason').notEmpty().isString().trim().isLength({ min: 10, max: 500 })
 ], rejectUser);
 
