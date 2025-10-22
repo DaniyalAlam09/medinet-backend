@@ -32,6 +32,7 @@ const createHospital = async (req, res) => {
             password: hospitalData.password || 'TempPassword123',
             phone: hospitalData.phone,
             role: 'hospital',
+            hospitalId: hospital._id,
             approvalStatus: 'pending'
         });
 
@@ -40,7 +41,10 @@ const createHospital = async (req, res) => {
         res.status(201).json({
             success: true,
             message: 'Hospital registered successfully. Awaiting approval.',
-            data: hospital
+            data: {
+                hospital: hospital,
+                userId: hospitalUser._id
+            }
         });
     } catch (error) {
         console.error('Create hospital error:', error);

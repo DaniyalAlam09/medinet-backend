@@ -40,6 +40,7 @@ const sendTokenResponse = (user, statusCode, res) => {
                 profileImage: user.profileImage,
                 isActive: user.isActive,
                 isEmailVerified: user.isEmailVerified,
+                approvalStatus: user.approvalStatus,
                 hospitalId: user.hospitalId,
                 licenseNumber: user.licenseNumber,
                 specialization: user.specialization,

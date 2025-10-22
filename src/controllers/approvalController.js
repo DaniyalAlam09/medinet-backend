@@ -78,8 +78,10 @@ const getPendingHospitals = async (req, res) => {
 // Get pending doctors for hospital admin
 const getPendingDoctors = async (req, res) => {
     try {
+        const hospital = await Hospital.findOne({ email: req.user.email });
         const { page = 1, limit = 10 } = req.query;
-        const hospitalId = req.user.hospitalId;
+        const hospitalId = hospital._id;
+        console.log("Hospital ID: ", hospitalId);
 
         const doctors = await User.find({
             role: 'doctor',

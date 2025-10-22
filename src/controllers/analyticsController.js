@@ -103,7 +103,7 @@ const getHospitalDashboard = async (req, res) => {
             }),
             getTodayAppointments(hospitalId),
             User.find({ role: 'doctor', hospitalId })
-                .select('firstName lastName specialization email phone status yearsOfExperience')
+                .select('firstName lastName specialization email phone status yearsOfExperience hospitalId licenseNumber qualification approvalStatus')
                 .sort({ createdAt: -1 })
                 .limit(5),
             Referral.find({

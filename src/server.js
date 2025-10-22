@@ -34,6 +34,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // Database connection
 const connectDB = async () => {
     try {
+        console.log("MONGO_URI Environment variable: ", process.env.MONGO_URI);
         const conn = await mongoose.connect(process.env.MONGO_URI);
         console.log(`✅ MongoDB connected: ${conn.connection.host}`);
     } catch (error) {

@@ -19,35 +19,25 @@ const checkApprovalStatus = async (req, res, next) => {
         }
 
         // Check approval status based on role
-        if (user.role === 'hospital_admin') {
-            // Hospital admins need their hospital to be approved by super admin
-            const hospital = await Hospital.findById(user.hospitalId);
-            if (!hospital) {
-                return res.status(403).json({
-                    success: false,
-                    message: 'Hospital not found. Please contact support.',
-                    requiresApproval: true,
-                    approvalType: 'hospital'
-                });
-            }
-
-            if (hospital.status !== 'approved') {
+        if (user.role === 'hospital') {
+            // Hospitals need to be approved by super admin
+            if (user.approvalStatus !== 'approved') {
                 return res.status(403).json({
                     success: false,
                     message: 'Your hospital registration is pending approval from Super Admin. Please wait for approval.',
                     requiresApproval: true,
                     approvalType: 'hospital',
-                    status: hospital.status
+                    status: user.approvalStatus
                 });
             }
         }
 
         if (user.role === 'doctor') {
-            // Doctors need to be approved by hospital admin
+            // Doctors need to be approved by hospital
             if (user.approvalStatus !== 'approved') {
                 return res.status(403).json({
                     success: false,
-                    message: 'Your doctor registration is pending approval from Hospital Admin. Please wait for approval.',
+                    message: 'Your doctor registration is pending approval from Hospital. Please wait for approval.',
                     requiresApproval: true,
                     approvalType: 'doctor',
                     status: user.approvalStatus
